@@ -7,27 +7,23 @@ $AbsPath = $FindBin::RealBin.'/';
 die "parameter error\n" unless ($#ARGV == 0);
 $rootDir = $ARGV[0];
 
-$cfg = new Config::Simple("${AbsPath}conf/app.conf");
-$virtualenv = $cfg->param('VIRTUALENV_PATH');
-$npm = $cfg->param('NPM_PATH');
+Config::Simple->import_from("${AbsPath}post-receive.conf", \%cfg);
+$virtualenv = $cfg{'VIRTUALENV_PATH'} or chomp ($virtualenv=`which virtualenv`);
+$npm = $cfg{'NPM_PATH'} or chomp ($npm=`which npm`);
 
 $runtimeFile = $rootDir.'/runtime.txt';
 if (-e $runtimeFile) {
-  $cfg = new Config::Simple("${AbsPath}conf/runtime.conf");
-  %cfgRuntime = $cfg->vars();
+  #%cfgRuntime = $cfg->vars();
   open RUNTIME, "<", $runtimeFile or die $!;
   $language = <RUNTIME>;
   chomp $language;
   #print "language: $language , $cfgRuntime{$language}\n";
-  if(exists $cfgRuntime{$language}){
-    $runtime = $cfgRuntime{$language};
-  }elsif(system("which $language")==0){
-    $runtime = `which $language`;
-  }else{
-    die "error runtime $language not found\n";
-  }
-  print "found runtime $runtime";
-  
+  $runtime = $cfg{$language}
+    or chomp ($runtime = `which $language`)
+    or die "error runtime $language not found\n";
+    
+  print "found runtime $runtime\n";
+
   $requirements = $rootDir.'/requirements.txt';
   $package = $rootDir.'/package.json';
   if (-e $requirements) {

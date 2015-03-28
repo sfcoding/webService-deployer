@@ -3,7 +3,7 @@ use FindBin;
 $AbsPath = $FindBin::RealBin.'/';
 
 use Config::Simple;
-$cfg = new Config::Simple("${AbsPath}conf/app.conf");
+$cfg = new Config::Simple("${AbsPath}deployer.conf");
 $GIT_DIR = $cfg->param('GIT_DIR').'/';
 $DEPLOY_DIR = $cfg->param('DEPLOY_DIR').'/';
 $NGINX_DIR = $cfg->param('NGINX_DIR').'/';
