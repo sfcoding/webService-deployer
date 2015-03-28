@@ -19,7 +19,7 @@ while (@ARGV) {
     ($_ eq '-h' || $_ eq '--help') && do { exit usage(0); };
     ($_ eq '-p' || $_ eq '--port') && do { $port = shift @ARGV; next; };
     ($_ eq '-d' || $_ eq '--domain') && do { $domain = "${shift @ARGV}.$DOMAIN"; next; };
-    ($_ eq '-l' || $_ eq '--lang') && do { $ appLang= shift @ARGV; next; };
+    ($_ eq '-l' || $_ eq '--lang') && do { $appLang = shift @ARGV; next; };
     ($_ =~ /^-./) && do { print STDERR "Unknown option: $_\n"; exit usage(1); };
 }
 
@@ -83,18 +83,22 @@ sub add {
   }
 
   #CREATE NGINX-CONFIG
-  $appLang = defined $appLang ? $appLang : 'html';
-  $port = defined $port ? '-p '.$port : '';
-  $domain = defined $domain ? '-d '.$domain : '';
-  system("bash ${AbsPath}utility/nginx_create.sh $appLang -f $appPath -o $NGINX_DIR$appName $port $domain");
-  if ( $? == 0 ){
-    system("service nginx reload");
-    if ($? != 0){
-      print "command failed: reload nginx $!\n";
+  if (! -e $NGINX_DIR.$appName){
+    $appLang = defined $appLang ? $appLang : 'php';
+    $port = defined $port ? '-p '.$port : '';
+    $domain = defined $domain ? '-d '.$domain : '';
+    system("bash ${AbsPath}utility/nginx_create.sh $appLang -f $appPath -o $NGINX_DIR$appName $port $domain");
+    if ( $? == 0 ){
+      system("service nginx reload");
+      if ($? != 0){
+        print "command failed: reload nginx $!\n";
+      }
+    }else{
+      print "command failed: nginx create configuration $!\n";
+      exit;
     }
   }else{
-    print "command failed: nginx create configuration $!\n";
-    exit;
+    print "skip: nginx config file exists\n";
   }
 }
 

@@ -49,7 +49,7 @@ case $LANGUAGE in
       passenger_enabled on;\n
     }"
   ;;
-  html)
+  php)
     template="server {\n
        listen $PORT;\n
        #listen 443 ssl;\n
@@ -57,15 +57,23 @@ case $LANGUAGE in
        #ssl_certificate_key /etc/nginx/ssl/nginx.key;\n
        \n
        root $FOLDER;\n
-       index index.html index.htm;\n
+       index index.php index.html index.htm;\n
        $DOMAIN
        \n
        location / {\n
         # First attempt to serve request as file, then\n
         # as directory, then fall back to displaying a 404.\n
-        try_files $uri $uri/ /index.html;\n
+        try_files \$uri \$uri/ /index.html;\n
         # Uncomment to enable naxsi on this location\n
         # include /etc/nginx/naxsi.rules\n
+       }\n
+       \n
+       location ~ \.php\$ {\n
+         try_files \$uri =404;\n
+         fastcgi_pass unix:/var/run/php5-fpm.sock;\n
+         fastcgi_index index.php;\n
+         fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;\n
+         include fastcgi_params;\n
        }\n
      }"
   ;;
@@ -93,5 +101,5 @@ if [[ -z $ERROR ]]; then
     echo -e $template
   fi
 else
-  echo -e "usage: python|html|node -f|--folder -d|--domain -o|--output"
+  echo -e "usage: python|php|node -f|--folder -d|--domain -o|--output"
 fi
