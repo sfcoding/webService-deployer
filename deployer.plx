@@ -1,12 +1,13 @@
 #!/usr/bin/perl -w
+use FindBin;
+$AbsPath = $FindBin::RealBin.'/';
 
 use Config::Simple;
-$cfg = new Config::Simple('app.conf');
+$cfg = new Config::Simple("${AbsPath}conf/app.conf");
 $GIT_DIR = $cfg->param('GIT_DIR').'/';
 $DEPLOY_DIR = $cfg->param('DEPLOY_DIR').'/';
 $NGINX_DIR = $cfg->param('NGINX_DIR').'/';
-use FindBin;
-$AbsPath = $FindBin::RealBin.'/';
+$DOMAIN = $cfg->param('DOMAIN').'/';
 
 exit usage(1) unless $#ARGV >= 1;
 
@@ -17,17 +18,13 @@ while (@ARGV) {
     local $_ = shift @ARGV;
     ($_ eq '-h' || $_ eq '--help') && do { exit usage(0); };
     ($_ eq '-p' || $_ eq '--port') && do { $port = shift @ARGV; next; };
-    ($_ eq '-d' || $_ eq '--domain') && do { $domain = shift @ARGV; next; };
+    ($_ eq '-d' || $_ eq '--domain') && do { $domain = "${shift @ARGV}.$DOMAIN"; next; };
     ($_ eq '-l' || $_ eq '--lang') && do { $ appLang= shift @ARGV; next; };
     ($_ =~ /^-./) && do { print STDERR "Unknown option: $_\n"; exit usage(1); };
 }
 
 $gitPath = $GIT_DIR.$appName.'.git/';
 $appPath = $DEPLOY_DIR.$appName;
-
-#mkdir repo && cd repo
-#mkdir site.git && cd site.git
-#git init --bare
 
 if ($mode eq 'add'){
   add();
@@ -64,7 +61,7 @@ sub add {
       print HOOK "git --work-tree=$appPath --git-dir=$gitPath checkout -f\n";
       print HOOK "${gitHook}post-receive.plx $appPath\n";
 
-      system("ln -s ${AbsPath}post-receive.plx ${gitHook}post-receive.plx");
+      system("ln -s ${AbsPath}utility/post-receive.plx ${gitHook}post-receive.plx");
       system("chown git:git $gitPostReceive && chmod 755 $gitPostReceive");
       if ( $? != 0 )
       {
@@ -89,7 +86,7 @@ sub add {
   $appLang = defined $appLang ? $appLang : 'html';
   $port = defined $port ? '-p '.$port : '';
   $domain = defined $domain ? '-d '.$domain : '';
-  system("bash ./nginx_create.sh $appLang -f $appPath -o $NGINX_DIR$appName $port $domain");
+  system("bash ${AbsPath}utility/nginx_create.sh $appLang -f $appPath -o $NGINX_DIR$appName $port $domain");
   if ( $? == 0 ){
     system("service nginx reload");
     if ($? != 0){

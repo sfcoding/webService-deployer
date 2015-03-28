@@ -1,6 +1,4 @@
 #!/bin/bash
-#custom value
-MAINSITE="<your-main-site>"
 
 #default configuration
 DOMAIN=""
@@ -13,7 +11,7 @@ while [[ $# > 1 ]]
 do
 case "$1" in
     -d|--domain)
-      DOMAIN="server_name $2.$MAINSITE;\n"
+      DOMAIN="server_name $2;\n"
       #HAVE_DOMAIN=true
       shift
     ;;

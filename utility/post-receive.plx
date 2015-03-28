@@ -7,23 +7,27 @@ $AbsPath = $FindBin::RealBin.'/';
 die "parameter error\n" unless ($#ARGV == 0);
 $rootDir = $ARGV[0];
 
-$cfg = new Config::Simple("${AbsPath}app.conf");
+$cfg = new Config::Simple("${AbsPath}conf/app.conf");
 $virtualenv = $cfg->param('VIRTUALENV_PATH');
 $npm = $cfg->param('NPM_PATH');
 
 $runtimeFile = $rootDir.'/runtime.txt';
 if (-e $runtimeFile) {
-  $cfg = new Config::Simple("${AbsPath}runtime.conf");
+  $cfg = new Config::Simple("${AbsPath}conf/runtime.conf");
   %cfgRuntime = $cfg->vars();
   open RUNTIME, "<", $runtimeFile or die $!;
   $language = <RUNTIME>;
   chomp $language;
-  print "language: $language , $cfgRuntime{$language}\n";
-  if(!exists $cfgRuntime{$language}){
-    die "error runtime not found\n";
+  #print "language: $language , $cfgRuntime{$language}\n";
+  if(exists $cfgRuntime{$language}){
+    $runtime = $cfgRuntime{$language};
+  }elsif(system("which $language")==0){
+    $runtime = `which $language`;
+  }else{
+    die "error runtime $language not found\n";
   }
-
-  $runtime =  $cfgRuntime{$language};
+  print "found runtime $runtime";
+  
   $requirements = $rootDir.'/requirements.txt';
   $package = $rootDir.'/package.json';
   if (-e $requirements) {
@@ -31,12 +35,24 @@ if (-e $runtimeFile) {
   }elsif (-e $package){
     node();
   }else{
-    die "no package or requirement found\n";
+    die "no package.json or requirement.txt found\n";
   }
+
+  if (! -e $rootDir.'/public'){
+    system("mkdir ${rootDir}/public");
+    if( $? == 0){
+      print "public directory created\n"
+    }
+  }
+
   if (! -e $rootDir.'/tmp'){
-    system("mkdir $rootDir/tmp");
+    system("mkdir ${rootDir}/tmp");
+    if( $? == 0){
+      print "tmp directory created\n"
+    }
   }
   system("touch $rootDir/tmp/restart.txt");
+
 }else{
   print "found HTML\n";
 }
@@ -52,7 +68,7 @@ sub python{
       die "error pip install\n";
     }
   }else {
-    die "can't create viirtualenv\n";
+    die "can't create virtualenv\n";
   }
 }
 
