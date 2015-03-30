@@ -1,6 +1,5 @@
 #!/usr/bin/perl -w
 use Config::Simple;
-use Cwd;
 use FindBin;
 $AbsPath = $FindBin::RealBin.'/';
 
@@ -21,7 +20,7 @@ if (-e $runtimeFile) {
   $runtime = $cfg{$language}
     or chomp ($runtime = `which $language`)
     or die "error runtime $language not found\n";
-    
+
   print "found runtime $runtime\n";
 
   $requirements = $rootDir.'/requirements.txt';

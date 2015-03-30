@@ -3,11 +3,10 @@ use FindBin;
 $AbsPath = $FindBin::RealBin.'/';
 
 use Config::Simple;
-$cfg = new Config::Simple("${AbsPath}deployer.conf");
-$GIT_DIR = $cfg->param('GIT_DIR').'/';
-$DEPLOY_DIR = $cfg->param('DEPLOY_DIR').'/';
-$NGINX_DIR = $cfg->param('NGINX_DIR').'/';
-$DOMAIN = $cfg->param('DOMAIN').'/';
+$cfg = new Config::Simple("${AbsPath}deployer.conf") or die "Configuration file not found\n";
+$GIT_DIR = $cfg->param('GIT_DIR').'/' or die "GIT_DIR not found\n";
+$DEPLOY_DIR = $cfg->param('DEPLOY_DIR').'/' or die "DEPLOY_DIR not found\n";
+$NGINX_DIR = $cfg->param('NGINX_DIR').'/' or die "NGINX_DIR not found\n";
 
 exit usage(1) unless $#ARGV >= 1;
 
@@ -18,7 +17,7 @@ while (@ARGV) {
     local $_ = shift @ARGV;
     ($_ eq '-h' || $_ eq '--help') && do { exit usage(0); };
     ($_ eq '-p' || $_ eq '--port') && do { $port = shift @ARGV; next; };
-    ($_ eq '-d' || $_ eq '--domain') && do { $domain = "${shift @ARGV}.$DOMAIN"; next; };
+    ($_ eq '-d' || $_ eq '--domain') && do { $domain = shift @ARGV; next; };
     ($_ eq '-l' || $_ eq '--lang') && do { $appLang = shift @ARGV; next; };
     ($_ =~ /^-./) && do { print STDERR "Unknown option: $_\n"; exit usage(1); };
 }
@@ -39,7 +38,12 @@ sub usage {
     my ($status) = @_;
     my $old_fh = select STDERR if $status;
 
-    print 'asdasd';
+    print "usage: deployer add|remove webService_name [options]\n";
+    print "  option:\n";
+    print "    -p, --port    port_number        port number for the nginx configuration file [default:80]\n";
+    print "    -d, --domain  domain_name        domain name for the nginx configuration file [default: not set]\n";
+    print "    -l, --lang    nodejs|python|php  set language for dependency resolving after push event [default:php]\n";
+    print "    -h, --help    show this help\n";
 
     select $old_fh if $old_fh;
     return $status;
