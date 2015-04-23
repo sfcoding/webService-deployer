@@ -42,7 +42,7 @@ sub usage {
     print "  option:\n";
     print "    -p, --port    port_number        port number for the nginx configuration file [default:80]\n";
     print "    -d, --domain  domain_name        domain name for the nginx configuration file [default: not set]\n";
-    print "    -l, --lang    nodejs|python|php  set language for dependency resolving after push event [default:php]\n";
+    print "    -l, --lang    node|python|php  set language for dependency resolving after push event [default:php]\n";
     print "    -h, --help    show this help\n";
 
     select $old_fh if $old_fh;
@@ -54,7 +54,7 @@ sub add {
   system("su -m git -c 'mkdir $gitPath'");
   if ( $? == 0 )
   {
-    system("su -m git -c 'git -C $gitPath init --bare'");
+    system("su -m git -c 'cd $gitPath && git init --bare'");
     if ( $? == 0 )
     {
       my $gitHook = $gitPath.'hooks/';
