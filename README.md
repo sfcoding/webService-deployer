@@ -36,7 +36,7 @@ For instance you can create a new project `hello_world` with the language `pytho
 ```
 Now all the configuration on the server are done. We have to go on the local pc to setting up the project folder; If the project is in nodejs or python we have to check that the project structure its correct for working with Phusion-Passenger (`tmp` and `public` folder and correct file name for the main file), otherwise in a Html/php project you can skip this. In addition of that structure you have to add same file for the deployer:
   - for Python:
-    - `requirement.txt` with all the pip library (generate with the command `pip freeze > requirement.txt`)
+    - `requirements.txt` with all the pip library (generate with the command `pip freeze > requirement.txt`)
     - `runtime.txt` with the name of the python executible (in debian python for python-2.7 and python3 for python 3.2) 
   - for Nodejs:
     - `package.json` with the npm library (generate it with the option --save of npm)
