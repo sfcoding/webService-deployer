@@ -54,7 +54,7 @@ sub add {
   system("su -m git -c 'mkdir $gitPath'");
   if ( $? == 0 )
   {
-    system("su -m git -c 'cd $gitPath && git init --bare'");
+    system("su -m git -c 'cd $gitPath && git init --bare --shared=group'");
     if ( $? == 0 )
     {
       my $gitHook = $gitPath.'hooks/';
