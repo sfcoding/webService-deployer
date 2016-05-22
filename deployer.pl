@@ -51,10 +51,10 @@ sub usage {
 
 sub add {
   #CRETE GIT REPOSITORY
-  system("su -m git -c 'mkdir $gitPath'");
+  system("su git -c 'mkdir $gitPath'");
   if ( $? == 0 )
   {
-    system("su -m git -c 'cd $gitPath && git init --bare --shared=group'");
+    system("su git -c 'cd $gitPath && git init --bare --shared=group'");
     if ( $? == 0 )
     {
       my $gitHook = $gitPath.'hooks/';
@@ -80,7 +80,7 @@ sub add {
   }
 
   #CREATE DEPLOY DIRECTORY
-  system("su -m git -c 'mkdir $appPath'");
+  system("su git -c 'mkdir $appPath'");
   if ( $? != 0 )
   {
     print "command failed: mkdir deploy directory $!\n";
