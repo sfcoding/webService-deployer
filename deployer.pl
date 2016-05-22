@@ -80,7 +80,7 @@ sub add {
   }
 
   #CREATE DEPLOY DIRECTORY
-  system("su git -c 'mkdir $appPath'");
+  system("su git -c 'mkdir $appPath && chmod 775 $appPath'");
   if ( $? != 0 )
   {
     print "command failed: mkdir deploy directory $!\n";
