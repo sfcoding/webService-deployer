@@ -1,6 +1,6 @@
 # webService-deployer
 
-##Installation Guide (Dedian)
+##Installation Guide (Debian)
 Create a Git Server:
 ```
 $ sudo adduser git
