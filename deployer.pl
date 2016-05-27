@@ -1,4 +1,6 @@
 #!/usr/bin/perl -w
+use strict;
+use warnings;
 use FindBin;
 $AbsPath = $FindBin::RealBin.'/';
 
@@ -63,9 +65,9 @@ sub add {
 
       print HOOK "#!/bin/sh\n";
       print HOOK "git --work-tree=$appPath --git-dir=$gitPath checkout -f\n";
-      print HOOK "${gitHook}post-receive.plx $appPath\n";
+      print HOOK "${gitHook}post-receive.pl $appPath\n";
 
-      system("ln -s ${AbsPath}utility/post-receive.plx ${gitHook}post-receive.plx");
+      system("ln -s ${AbsPath}utility/post-receive.pl ${gitHook}post-receive.pl");
       system("chown git:git $gitPostReceive && chmod 755 $gitPostReceive");
       if ( $? != 0 )
       {
