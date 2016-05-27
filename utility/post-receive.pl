@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
-use strict;
-use warnings;
+# use strict;
+# use warnings;
+
 use Config::Simple;
 use FindBin;
 $AbsPath = $FindBin::RealBin.'/';
