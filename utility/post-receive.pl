@@ -14,6 +14,12 @@ $virtualenv = $cfg{'VIRTUALENV_PATH'}
   or chomp( $virtualenv = `which virtualenv` );
 $npm = $cfg{'NPM_PATH'} or chomp( $npm = `which npm` );
 
+# CUSTOM SCRIPT - before
+my $before_script = <"$rootDir/hooks/before*"> || 0;
+if ( -f $before_script ) {
+    execute_script($before_script);
+}
+
 $runtimeFile = $rootDir . '/runtime.txt';
 if ( -e $runtimeFile ) {
 
@@ -42,24 +48,27 @@ if ( -e $runtimeFile ) {
         die "no package.json or requirement.txt found\n";
     }
 
-    if ( !-e $rootDir . '/public' ) {
+    if ( !-d $rootDir . '/public' ) {
         system("mkdir ${rootDir}/public");
-        if ( $? == 0 ) {
-            print "public directory created\n";
-        }
+        print "public directory created\n";
     }
 
-    if ( !-e $rootDir . '/tmp' ) {
+    if ( !-d $rootDir . '/tmp' ) {
         system("mkdir ${rootDir}/tmp");
-        if ( $? == 0 ) {
-            print "tmp directory created\n";
-        }
+        print "tmp directory created\n";
     }
+
+    # CUSTOM SCRIPT - after
+    my $after_script = <"$rootDir/hooks/after*"> || 0;
+    if ( -f $after_script ) {
+        execute_script($after_script);
+    }
+
     system("touch $rootDir/tmp/restart.txt");
 
 }
 else {
-    print "found HTML\n";
+    print "found PHP/HTML\n";
 }
 
 sub python {
@@ -81,5 +90,29 @@ sub node {
     system("$npm install --nodedir=$runtime --prefix $rootDir");
     if ( $? != 0 ) {
         die "error npm install\n";
+    }
+}
+
+sub execute_script {
+    my ($file) = @_;
+
+    system("$file");
+    if ($?) {
+        print "get an error try to guss the interpreter..\n";
+        if ( $file =~ /.\.sh$/s ) {
+            print "execute with bash\n";
+            system("bash $file");
+        }
+        elsif ( $file =~ /.\.py$/s ) {
+            print "execute with python\n";
+            system("python $file");
+        }
+        elsif ( $file =~ /.\.js$/s ) {
+            print "execute with nodejs\n";
+            system("node $file");
+        }
+        if ($?) {
+            print "error during execution\n";
+        }
     }
 }
