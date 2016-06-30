@@ -96,6 +96,10 @@ sub node {
 sub execute_script {
     my ($file) = @_;
 
+    use Cwd;
+    my $origin = getcwd;
+    chdir $rootDir;
+
     system("$file");
     if ($?) {
         print "get an error try to guss the interpreter..\n";
@@ -115,4 +119,5 @@ sub execute_script {
             print "error during execution\n";
         }
     }
+    chdir $origin;
 }
