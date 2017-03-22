@@ -1,42 +1,56 @@
 #!/usr/bin/perl -w
-# use strict;
-# use warnings;
-use FindBin;
-$AbsPath = $FindBin::RealBin.'/';
+use strict;
+use warnings;
 
+use FindBin;
 use Config::Simple;
-$cfg = new Config::Simple("${AbsPath}deployer.conf") or die "Configuration file not found\n";
-$GIT_DIR = $cfg->param('GIT_DIR').'/' or die "GIT_DIR not found\n";
-$DEPLOY_DIR = $cfg->param('DEPLOY_DIR').'/' or die "DEPLOY_DIR not found\n";
-$NGINX_DIR = $cfg->param('NGINX_DIR').'/' or die "NGINX_DIR not found\n";
+
+my $AbsPath = $FindBin::RealBin.'/';
+
+my $cfg = new Config::Simple("${AbsPath}deployer.conf") or die "Configuration file not found\n";
+my $GIT_DIR = $cfg->param('GIT_DIR').'/' or die "GIT_DIR not found\n";
+my $DEPLOY_DIR = $cfg->param('DEPLOY_DIR').'/' or die "DEPLOY_DIR not found\n";
+my $NGINX_DIR = $cfg->param('NGINX_DIR').'/' or die "NGINX_DIR not found\n";
 
 exit usage(1) unless $#ARGV >= 1;
 
-$mode = shift @ARGV;
-$appName = shift @ARGV;
+my $port; my $domain; my $appLang;
+
+my $mode = shift @ARGV;
+my $appName = shift @ARGV;
 
 while (@ARGV) {
+
     local $_ = shift @ARGV;
     ($_ eq '-h' || $_ eq '--help') && do { exit usage(0); };
-    ($_ eq '-p' || $_ eq '--port') && do { $port = shift @ARGV; next; };
-    ($_ eq '-d' || $_ eq '--domain') && do { $domain = shift @ARGV; next; };
-    ($_ eq '-l' || $_ eq '--lang') && do { $appLang = shift @ARGV; next; };
+    ($_ eq '-p' || $_ eq '--port') && do { my $port = shift @ARGV; next; };
+    ($_ eq '-d' || $_ eq '--domain') && do { my $domain = shift @ARGV; next; };
+    ($_ eq '-l' || $_ eq '--lang') && do { my $appLang = shift @ARGV; next; };
     ($_ =~ /^-./) && do { print STDERR "Unknown option: $_\n"; exit usage(1); };
+
 }
 
-$gitPath = $GIT_DIR.$appName.'.git/';
-$appPath = $DEPLOY_DIR.$appName;
+my $gitPath = $GIT_DIR.$appName.'.git/';
+my $appPath = $DEPLOY_DIR.$appName;
 
 if ($mode eq 'add'){
+
   add();
+
 }
+
 elsif ($mode eq 'remove'){
+
   remove();
+
 }else{
+
   exit usage(1);
+
 }
 
 sub usage {
+
     my ($status) = @_;
     my $old_fh = select STDERR if $status;
 
@@ -49,6 +63,7 @@ sub usage {
 
     select $old_fh if $old_fh;
     return $status;
+
 }
 
 sub add {
