@@ -10,7 +10,7 @@
 
 <!-- /TOC -->
 
-##Installation Guide (Debian)
+## Installation Guide (Debian)
 Create a Git Server:
 ```
 $ sudo adduser git
@@ -30,7 +30,7 @@ Configure software:
 
 [Optional] Add a symbolic link of command `deplot.plx` in your folder `/usr/sbin`
 
-##User Guide
+## User Guide
 Use the command `deploy.plx` to create a new project or remove an existing one. With options is possible to choose the domain name, the port number and the language of the project. This is the usage scheme of the deployer command:
 ```
 usage: deployer add|remove webService_name [options]
@@ -41,7 +41,7 @@ usage: deployer add|remove webService_name [options]
     -h, --help    show this help
 ```
 
-###Create a new Project
+### Create a new Project
 For instance is possible to create a new project `hello_world` with the `python` language on the domain `hello_world.example.com` performing the following command:
 ```
 # deployer add hello_world -d hello_world.example.com -l python`
@@ -64,7 +64,7 @@ $ git push live master
 ```
 If everything works you can reach your web service at url `hello_world.example.com`
 
-###Delete a Project
+### Delete a Project
 If you need to remove a project you can enter the following simple command:
 ```
 # deployer remove <project_name>
