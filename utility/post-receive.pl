@@ -1,13 +1,16 @@
 #!/usr/bin/perl -w
-# use strict;
-# use warnings;
+use strict;
+use warnings;
 
 use Config::Simple;
 use FindBin;
-$AbsPath = $FindBin::RealBin . '/';
+
+my $AbsPath = $FindBin::RealBin . '/';
 
 die "parameter error\n" unless ( $#ARGV == 0 );
-$rootDir = $ARGV[0];
+my $rootDir = $ARGV[0];
+
+my %cfg; my $virtualenv; my $npm; my $runtime; my $requirements;
 
 Config::Simple->import_from( "${AbsPath}post-receive.conf", \%cfg );
 $virtualenv = $cfg{'VIRTUALENV_PATH'}
@@ -20,12 +23,12 @@ if ( -f $before_script ) {
     execute_script($before_script);
 }
 
-$runtimeFile = $rootDir . '/runtime.txt';
+my $runtimeFile = $rootDir . '/runtime.txt';
 if ( -e $runtimeFile ) {
 
     # %cfgRuntime = $cfg->vars();
     open RUNTIME, "<", $runtimeFile or die $!;
-    $language = <RUNTIME>;
+    my $language = <RUNTIME>;
     chomp $language;
 
     # print "language: $language , $cfgRuntime{$language}\n";
@@ -37,7 +40,8 @@ if ( -e $runtimeFile ) {
     print "found runtime $runtime\n";
 
     $requirements = $rootDir . '/requirements.txt';
-    $package      = $rootDir . '/package.json';
+    my $package      = $rootDir . '/package.json';
+
     if ( -e $requirements ) {
         python();
     }
